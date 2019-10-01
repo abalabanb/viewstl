@@ -133,7 +133,7 @@ void DrawGLScene()
         glutHideWindow();
         free(model->tris);
         free(model);
-        loadStlFile(filename);
+        model = loadStlFile(filename);
         if (verbose) {
             printf("File Processed\n");
             printf("Poly Count = %u\n", model->tris_size);
@@ -487,7 +487,8 @@ int main(int argc, char *argv[]) {
             printf("Something went wrong while enabling inotify. Disabling file watcher.\n");
             reload = 0;
         } else {
-            reload_wd = inotify_add_watch(reload_fd, dirname(filename), IN_CREATE | IN_MODIFY | IN_DELETE);
+            //reload_wd = inotify_add_watch(reload_fd, dirname(filename), IN_CREATE | IN_MODIFY | IN_CLOSE_WRITE);
+            reload_wd = inotify_add_watch(reload_fd, dirname(filename), IN_CLOSE_WRITE);
             reload_pfd[0].fd = reload_fd;
             reload_pfd[0].events = POLLIN;
             printf("Watching for file changes.\n");
