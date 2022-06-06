@@ -445,17 +445,17 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i], "-p") == 0)
             ViewFlag = PERSPECTIVE;
 
-        if (strcmp(argv[i], "-f") == 0)
+        else if (strcmp(argv[i], "-f") == 0)
             idle_draw = NO;
 
-        if (strcmp(argv[i], "-v") == 0)
+        else if (strcmp(argv[i], "-v") == 0)
             verbose = YES;
 #ifdef __linux__
-        if (strcmp(argv[i], "-r") == 0)
+        else if (strcmp(argv[i], "-r") == 0)
             reload = YES;
 #endif
 
-        if (filename == NULL)
+        else if (filename == NULL)
             filename = argv[i];
     }
 
