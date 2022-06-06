@@ -28,15 +28,15 @@
 
 /* A general OpenGL initialization function. */
 /* Called once from main() */
-void InitGL(int Width, int Height)	        /* We call this right after our OpenGL window is created.*/
+void InitGL(int Width, int Height)          /* We call this right after our OpenGL window is created.*/
 {
-    glClearColor(0.1f, 0.0f, 0.0f, 0.0f);		/* This Will Clear The Background Color To Dark Red*/
-    glClearDepth(1.0);				/* Enables Clearing Of The Depth Buffer*/
-    glDepthFunc(GL_LESS);			        /* The Type Of Depth Test To Do*/
-    glEnable(GL_DEPTH_TEST);		        /* Enables Depth Testing*/
-    glShadeModel(GL_SMOOTH);			/* Enables Smooth Color Shading*/
+    glClearColor(0.1f, 0.0f, 0.0f, 0.0f);       /* This Will Clear The Background Color To Dark Red*/
+    glClearDepth(1.0);              /* Enables Clearing Of The Depth Buffer*/
+    glDepthFunc(GL_LESS);                   /* The Type Of Depth Test To Do*/
+    glEnable(GL_DEPTH_TEST);                /* Enables Depth Testing*/
+    glShadeModel(GL_SMOOTH);            /* Enables Smooth Color Shading*/
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();				/* Reset The Projection Matrix*/
+    glLoadIdentity();               /* Reset The Projection Matrix*/
 
     SetView(Width, Height, model);  /* Setup the View Matrix */
 
@@ -52,7 +52,7 @@ void InitGL(int Width, int Height)	        /* We call this right after our OpenG
 /* The function called when our window is resized  */
 void ReSizeGLScene(int Width, int Height)
 {
-    if (Height==0)	/* Prevent A Divide By Zero If The Window Is Too Small*/
+    if (Height==0)  /* Prevent A Divide By Zero If The Window Is Too Small*/
         Height=1;
 
     glViewport(0, 0, Width, Height);    /* Reset The Current Viewport And Perspective Transformation*/
@@ -86,7 +86,7 @@ void DrawGLScene()
     if ((!update) && (!idle_draw))
         return;
     update = NO;
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);	/* Clear The Screen And The Depth Buffer*/
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT); /* Clear The Screen And The Depth Buffer*/
     /* for now use two different methods of scaling depending on ortho or perspective */
     if (ViewFlag == PERSPECTIVE)
     {
@@ -551,8 +551,8 @@ void usage(int e) {
     if (e) exit(1);
 }
 
-#ifdef __linux__
 int checkFileChanged() {
+#ifdef __linux__
     if (poll(reload_pfd, 1, 0) < 1) return 0;
 
     int length = read(reload_fd, reload_buffer, 1024 * (sizeof(struct inotify_event) + 16));
@@ -565,9 +565,11 @@ int checkFileChanged() {
         if (e->wd == reload_wd && strcmp(e->name, filename) == 0) return 1;
         ptr += (sizeof(struct inotify_event) + e->len);
     }
+#endif // __linux__
     return 0;
 }
 
+#ifdef __linux__
 void inotify_cleanup() {
     inotify_rm_watch(reload_fd, reload_wd);
     close(reload_fd);
