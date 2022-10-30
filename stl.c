@@ -1,4 +1,16 @@
 #include "stl.h"
+#include <machine/endian.h>
+
+#if _BYTE_ORDER == _BIG_ENDIAN
+    inline float lefloatswap(float value) {
+        union { float fval; uint32_t intval; } trans;
+        trans.fval = value;
+        trans.intval = __bswap32(trans.intval);
+        return trans.fval;
+    }
+#endif
+
+extern int verbose;
 
 void readStlAscii(FILE *f, STL_data *stl) {
     rewind(f);
@@ -71,9 +83,12 @@ void readStlBinary(FILE *f, STL_data *stl) {
 
     fread(&stl->header, 80, 1, f);
     fread(&stl->tris_size, 4, 1, f);
+    #if _BYTE_ORDER == _BIG_ENDIAN
+    stl->tris_size = __bswap32(stl->tris_size);
+    #endif
 
     printf("\n");
-    while ( !feof(f) && poly_idx + 1 < stl->tris_size ) {
+    while ( !feof(f) && poly_idx < stl->tris_size ) {
         if (poly_idx + 1 > stl->_tris_malloc_size / sizeof(STL_triangle)) {
             stl->tris = realloc(stl->tris, stl->_tris_malloc_size * 2);
             stl->_tris_malloc_size *= 2;
@@ -86,10 +101,21 @@ void readStlBinary(FILE *f, STL_data *stl) {
         int r = fread(&stl->tris[poly_idx], 50, 1, f);
         if (r != 1) break;
 
-        printf("\033[25m\033[999D\033[1A%u polygons read into %u bytes of memory.\033[K\n\033[0m", poly_idx, stl->_tris_malloc_size);
+        #if _BYTE_ORDER == _BIG_ENDIAN
+        for(int pt_idx = 0; pt_idx < 3; pt_idx++) {
+            stl->tris[poly_idx].normal[pt_idx]   = lefloatswap(stl->tris[poly_idx].normal[pt_idx]);
+            stl->tris[poly_idx].vertex_a[pt_idx] = lefloatswap(stl->tris[poly_idx].vertex_a[pt_idx]);
+            stl->tris[poly_idx].vertex_b[pt_idx] = lefloatswap(stl->tris[poly_idx].vertex_b[pt_idx]);
+            stl->tris[poly_idx].vertex_c[pt_idx] = lefloatswap(stl->tris[poly_idx].vertex_c[pt_idx]);
+        }
+        #endif
+
+        if(verbose)
+            printf("\033[25m\033[999D\033[1A%u polygons read into %u bytes of memory.\033[K\n\033[0m", poly_idx, stl->_tris_malloc_size);
         poly_idx++;
     }
 
+    printf("stl->tris_size=%u, poly_idx=%u\n",stl->tris_size, poly_idx);
     fread(&stl->tris[poly_idx].attr, 2, 1, f);
 
 }
