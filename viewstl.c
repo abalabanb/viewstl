@@ -318,10 +318,10 @@ STL_data* loadStlFile(const char* filepath) {
     tmp_stl->transform.scale = 1;
     tmp_stl->transform.z_depth = -5;
 
-    char buf[80]; char *chk_p;
+    char buf[80]; int chk;
     fread(buf, 1, sizeof(buf), tmp_file);
-    chk_p = strstr(buf, "solid");
-    if (!chk_p) { // STL is binary if chk_p is false
+    chk = (strstr(buf, "solid") == buf) && (strstr(buf, "facet") != NULL);
+    if (!chk) { // STL is binary if chk is false
         readStlBinary(tmp_file, tmp_stl);
         tmp_stl->type = STL_TYPE_BINARY;
     } else {
