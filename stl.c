@@ -2,7 +2,7 @@
 #include <machine/endian.h>
 
 #if _BYTE_ORDER == _BIG_ENDIAN
-    inline float lefloatswap(float value) {
+    static inline float lefloatswap(float value) {
         union { float fval; uint32_t intval; } trans;
         trans.fval = value;
         trans.intval = __bswap32(trans.intval);
@@ -116,6 +116,4 @@ void readStlBinary(FILE *f, STL_data *stl) {
     }
 
     printf("stl->tris_size=%u, poly_idx=%u\n",stl->tris_size, poly_idx);
-    fread(&stl->tris[poly_idx].attr, 2, 1, f);
-
 }
