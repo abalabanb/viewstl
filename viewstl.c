@@ -26,6 +26,14 @@
 
 #include "viewstl.h"
 
+#include <ctype.h>
+
+static inline char* strtolower(char *p) {
+    char *start=p;
+    for(;*p;++p) *p=tolower(*p);
+    return start;
+}
+
 /* A general OpenGL initialization function. */
 /* Called once from main() */
 void InitGL(int Width, int Height)          /* We call this right after our OpenGL window is created.*/
@@ -320,7 +328,9 @@ STL_data* loadStlFile(const char* filepath) {
 
     char buf[80]; int chk;
     fread(buf, 1, sizeof(buf), tmp_file);
-    chk = (strstr(buf, "solid") == buf) && (strstr(buf, "facet") != NULL);
+    strtolower(buf);
+
+    chk = (strstr(buf, "solid") != NULL) && (strstr(buf, "facet") != NULL);
     if (!chk) { // STL is binary if chk is false
         readStlBinary(tmp_file, tmp_stl);
         tmp_stl->type = STL_TYPE_BINARY;
